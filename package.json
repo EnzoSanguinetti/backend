@@ -1,0 +1,14 @@
+{
+    "name": "servidor-express",
+    "version": "1.0.0",
+    "description": "servidor basado en Express que puede realizar consultas a los archivos de productos utilizando la clase 'ProductManager'",
+    "main": "app.js",
+    "scripts": {
+      "start": "node app.js"
+    },
+    "author": "Enzo Sanguinetti",
+    "license": "MIT",
+    "dependencies": {
+      "express": "^4.17.1"
+    }
+  }
