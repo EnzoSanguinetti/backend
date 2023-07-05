@@ -32,3 +32,17 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`Servidor escuchando en el puerto ${port}`);
 });
+
+const mongoose = require('mongoose');
+
+// Establecer la conexión con la base de datos de MongoDB
+mongoose.connect('mongodb+srv://EnzoSangui:remember71120@proyect.ry6mwfd.mongodb.net/Proyect', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Error de conexión con MongoDB:'));
+db.once('open', () => {
+  console.log('Conexión exitosa con MongoDB');
+});
