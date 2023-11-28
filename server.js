@@ -4,6 +4,14 @@ const socketIO = require('socket.io');
 const productsRouter = require('./routes/products');
 const cartsRouter = require('./routes/carts');
 
+const express = require('express');
+const app = express();
+const adminRoutes = require('./routes/adminRoutes');
+
+
+app.use('/admin', adminRoutes);
+
+
 
 newTicket.save((err, ticket) => {
   if (err) {
@@ -14,9 +22,6 @@ newTicket.save((err, ticket) => {
     console.log('Ticket guardado exitosamente:', ticket);
   }
 });
-
-
-const app = express();
 
 const currentRoutes = require('./routes/current');
 const productRoutes = require('./routes/product');
@@ -145,7 +150,6 @@ module.exports = router;
 
 
 const express = require('express');
-const router = express.Router();
 const Product = require('./routes/products');
 const Cart = require('./routes/carts');
 const TicketService = require('./ticketModel'); 
@@ -218,6 +222,40 @@ router.post('/:cid/purchase', async (req, res) => {
   } catch (error) {
     console.error('Error al procesar la compra:', error);
     res.status(500).json({ success: false, error: 'Error al procesar la compra' });
+  }
+});
+
+module.exports = router;
+
+
+const express = require('express');
+const router = express.Router();
+const Product = require('./routes/products');
+const sendProductDeletedEmail = require('../utils/emailService'); 
+
+// Ruta para eliminar un producto
+router.delete('/:pid', async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Producto no encontrado' });
+    }
+
+    // Verificar si el producto está asociado a un usuario premium
+    if (product.premiumUserId) {
+      // Enviar correo al usuario premium indicando que el producto fue eliminado
+      sendProductDeletedEmail(product.premiumUserId, product.title);
+    }
+
+    // Eliminar el producto
+    await product.remove();
+
+    res.status(200).json({ success: true, message: 'Producto eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ success: false, error: 'Error al eliminar producto' });
   }
 });
 
